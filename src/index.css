@@ -63,3 +63,16 @@ button:hover {
     right: 20px;
     font-size: 12px;
 }
+
+.price {
+    color: blue;
+    cursor: pointer;
+    border: 1px solid blue;
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  .price.clicked {
+    border-color: lightblue;
+  }

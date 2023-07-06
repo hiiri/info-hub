@@ -9,6 +9,7 @@ const App = () => {
     const [price, setPrice] = useState(null);
     const [lastChecked, setLastChecked] = useState(null);
     const [time, setTime] = useState(Date.now());
+    const [showEuros, setShowEuros] = useState(false);
 
     const fetchPrice = () => {
         console.log('Fetching price...');
@@ -38,7 +39,7 @@ const App = () => {
     };
 
     const handleRefreshClick = () => {
-        setPrice(null); // set price to null to show loading spinner
+        setPrice(null);
         fetchPrice();
     };
 
@@ -62,12 +63,23 @@ const App = () => {
         console.log('You selected ', option);
     };
 
+    const handlePriceClick = () => {
+        setShowEuros(!showEuros);
+    };
+
+
     return (
         <div className="app">
             <h1 className="title">Electricity Price</h1>
             {price !== null ? (
                 <div>
-                    <p className="price">The current price is <b>{priceToCents(price)} €</b>  / kWh.</p>
+                    <p>
+                        The current price is {' '}
+                        <span onClick={handlePriceClick} className={`price ${showEuros ? 'clicked' : ''}`}>
+                            {showEuros
+                                ? `${price} €`
+                                : `${priceToCents(price)} ¢`}</span> / kWh.
+                    </p>
                     <p className="last-checked">Last checked: {formatTimeElapsed()}</p>
                 </div>
             ) : (
