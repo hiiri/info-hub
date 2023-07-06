@@ -1,0 +1,65 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+body {
+    background: linear-gradient(to bottom, #1e5799, #2989d8);
+    background-repeat: no-repeat;
+}
+
+.app {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 32px;
+    color: #2989d8;
+}
+
+.price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.last-checked {
+    font-size: 16px;
+    color: #666;
+}
+
+.loading {
+    font-size: 16px;
+    color: #666;
+}
+
+button {
+    background-color: #2989d8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: #1e5799;
+}
+
+.country-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 12px;
+}

@@ -1,0 +1,84 @@
+import React, { useState, useEffect, useRef } from 'react';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+
+import './index.css';
+import { ELECTRICITY_FETCH_INTERVAL } from './constants';
+
+const App = () => {
+    const [price, setPrice] = useState(null);
+    const [lastChecked, setLastChecked] = useState(null);
+    const [time, setTime] = useState(Date.now());
+
+    const fetchPrice = () => {
+        console.log('Fetching price...');
+        fetch('/electricity-price')
+            .then(response => response.json())
+            .then(data => {
+                setPrice(data.price);
+                setLastChecked(Date.now());
+                console.log('Price fetched:', data.price);
+            })
+            .catch(error => console.error(error));
+    };
+
+    useEffect(() => {
+        fetchPrice();
+        const interval = setInterval(fetchPrice, ELECTRICITY_FETCH_INTERVAL);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => setTime(Date.now()), 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const priceToCents = (price) => {
+        return (price * 100).toFixed(2);
+    };
+
+    const handleRefreshClick = () => {
+        setPrice(null); // set price to null to show loading spinner
+        fetchPrice();
+    };
+
+    const formatTimeElapsed = () => {
+        if (lastChecked !== null) {
+            const secondsElapsed = Math.floor((Date.now() - lastChecked) / 1000);
+            const minutes = Math.floor(secondsElapsed / 60);
+            const seconds = secondsElapsed % 60;
+            return `${minutes} minutes and ${seconds} seconds ago`;
+        } else {
+            return "0 minutes and 0 seconds ago";
+        }
+    };
+
+    const options = [
+        'Finland',
+    ];
+    const defaultOption = options[0];
+
+    const _onSelect = (option) => {
+        console.log('You selected ', option);
+    };
+
+    return (
+        <div className="app">
+            <h1 className="title">Electricity Price</h1>
+            {price !== null ? (
+                <div>
+                    <p className="price">The current price is <b>{priceToCents(price)} €</b>  / kWh.</p>
+                    <p className="last-checked">Last checked: {formatTimeElapsed()}</p>
+                </div>
+            ) : (
+                <div>
+                    <p className="loading">Loading...</p>
+                </div>
+            )}
+            <button className="refresh-button" onClick={handleRefreshClick}>{price !== null ? 'Refresh' : 'Refreshing...'}</button>
+            <Dropdown className="country-selector" options={options} onChange={_onSelect} value={defaultOption} placeholder="Select an option" />
+        </div>
+    );
+};
+
+export default App;
