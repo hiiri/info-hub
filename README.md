@@ -1,5 +1,5 @@
 # info-hub
-Dashboard for useful daily home data
+Dashboard for useful daily home data created using Node.js and React.
 
 ## Todo
 
