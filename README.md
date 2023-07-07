@@ -12,4 +12,15 @@ Dashboard for useful daily home data created using Node.js and React.
 - [ ] AirThings integration for air quality
 
 ## Getting Started
-WIP
+# Linux/macOS
+Run frontend and backend
+```
+cd frontend
+npm install
+npm start
+```
+```
+cd backend
+npm install
+npm start
+```

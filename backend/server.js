@@ -4,7 +4,6 @@ const app = express();
 const cors = require('cors');
 const axios = require('axios');
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.get('/', (req, res) => {

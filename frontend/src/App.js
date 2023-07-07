@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import { fetchCurrentElectricityPrice } from './api/ElectricityAPIUtils';
 
-import './index.css';
+import './style.css';
 import { ELECTRICITY_FETCH_INTERVAL } from './constants';
 
 const App = () => {
@@ -13,14 +14,13 @@ const App = () => {
 
     const fetchPrice = () => {
         console.log('Fetching price...');
-        fetch('/electricity-price')
-            .then(response => response.json())
-            .then(data => {
+        fetchCurrentElectricityPrice().then((data) => {
+            if (data !== null) {
                 setPrice(data.price);
                 setLastChecked(Date.now());
-                console.log('Price fetched:', data.price);
-            })
-            .catch(error => console.error(error));
+            }
+        }
+        );
     };
 
     useEffect(() => {
