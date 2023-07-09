@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import { fetchCurrentElectricityPrice, fetchCurrentWeather } from './api/APIUtils';
+import { fetchCurrentElectricityPrice, fetchCurrentWeather, fetchForecastWeather } from './api/APIUtils';
 
 import './style.css';
 import { ELECTRICITY_FETCH_INTERVAL, WEATHER_FETCH_INTERVAL } from './constants';
@@ -30,6 +30,7 @@ const App = () => {
     const [time, setTime] = useState(Date.now());
     const [showEuros, setShowEuros] = useState(false);
     const [weather, setWeather] = useState(null);
+    const [forecast, setForecast] = useState(null);
 
     const fetchPrice = () => {
         console.log('Fetching price...');
@@ -60,6 +61,12 @@ const App = () => {
                 console.error(error);
             });
     };
+
+    useEffect(() => {
+        fetchForecastWeather('Helsinki')
+            .then(data => setForecast(data))
+            .catch(error => console.error(error));
+    }, []);
 
     useEffect(() => {
         fetchWeather();
@@ -108,6 +115,33 @@ const App = () => {
         setShowEuros(!showEuros);
     };
 
+    const getWeekday = (date) => {
+        const options = { weekday: 'long' };
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+
+    const Forecast = ({ data }) => {
+        if (!data) {
+            return <p>Loading forecast...</p>;
+        }
+
+        // Filter the forecast data to get the weather at 12:00 each day
+        const dailyData = data.list.filter((forecast) =>
+            new Date(forecast.dt * 1000).getHours() === 12
+        );
+
+        return (
+            <div className="forecast">
+                {dailyData.slice(0, 7).map((forecast, index) => (
+                    <div key={index} className="forecast-day">
+                        <p>{getWeekday(new Date(forecast.dt * 1000))}</p>
+                        <p>{Math.round(forecast.main.temp)} °C</p>
+                        <img src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`} alt={forecast.weather[0].description} />
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     return (
         <div className="app">
@@ -153,6 +187,8 @@ const App = () => {
                     </div>
                 )}
             </div>
+            <Forecast data={forecast} />
+
         </div>
     );
 };

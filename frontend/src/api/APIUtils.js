@@ -18,8 +18,6 @@ export const fetchCurrentElectricityPrice = async () => {
     }
 }
 
-
-
 export const fetchCurrentWeather = async (city) => {
     try {
         const response = await backendAPI.get(`/weather/${city}`);
@@ -29,6 +27,17 @@ export const fetchCurrentWeather = async (city) => {
         console.log(response.data)
 
         return { temperature, icon, description };
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export const fetchForecastWeather = async (city) => {
+    try {
+        const response = await backendAPI.get(`/weather/forecast/${city}`);
+        console.log(response.data)
+        return response.data;
     } catch (error) {
         console.error(error);
         return null;

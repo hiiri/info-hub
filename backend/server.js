@@ -40,6 +40,18 @@ app.get('/weather/:city', async (req, res) => {
   }
 });
 
+app.get('/weather/forecast/:city', async (req, res) => {
+  const city = req.params.city;
+  try {
+      const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${process.env.OPENWEATHERMAP_API_KEY}`
+      );
+      res.json(response.data)
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 const PORT = process.env.PORT || 5123;
 
