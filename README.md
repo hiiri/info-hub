@@ -4,7 +4,7 @@ Dashboard for useful daily home data created using Node.js and React.
 ## Todo
 
 - [x] Fetch and display current electricity price
-- [ ] Display weather forecasts
+- [x] Display weather conditions
 - [ ] Settings/UI preferences
 - [ ] Notifications for electricity price
 - [ ] Notifications for weather conditions
@@ -19,6 +19,7 @@ cd frontend
 npm install
 npm start
 ```
+Add a .env file in backend/ and add OPENWEATHERMAP_API_KEY={your key here} 
 ```
 cd backend
 npm install

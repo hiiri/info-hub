@@ -1,3 +1,9 @@
+:root {
+    --blue-dark: #1e5799;
+    --blue-light: #2989d8;
+}
+
+
 html, body {
     height: 100%;
 }
@@ -8,7 +14,7 @@ body {
 }
 
 body {
-    background: linear-gradient(to bottom, #1e5799, #2989d8);
+    background: linear-gradient(to bottom, var(--blue-dark), var(--blue-light));
     background-repeat: no-repeat;
 }
 
@@ -23,7 +29,7 @@ h1 {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 32px;
-    color: #2989d8;
+    color: var(--blue-light);
 }
 
 .price {
@@ -54,7 +60,7 @@ button {
 }
 
 button:hover {
-    background-color: #1e5799;
+    background-color: var(--blue-dark);
 }
 
 .country-selector {
@@ -75,4 +81,19 @@ button:hover {
   
   .price.clicked {
     border-color: lightblue;
+  }
+
+
+  .weather-temperature {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .weather-icon {
+    border: 1px solid #333;
+    border-radius: 5px;
+    width: 50px;
+    background-color: lightblue;
+    vertical-align: middle;
+    margin-left: 10px;
   }
