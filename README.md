@@ -1,6 +1,8 @@
 # info-hub
 Dashboard for useful daily home data created using Node.js and React.
 
+![Preview](./github/preview.png)
+
 ## Todo
 
 - [x] Fetch and display current electricity price
