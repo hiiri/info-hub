@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
-import { fetchCurrentElectricityPrice, fetchCurrentWeather, fetchForecastWeather } from './api/APIUtils';
-
+import { fetchCurrentElectricityPrice, fetchWeatherDataForCity } from './api/APIUtils';
+import ElectricityPriceDisplay from './components/ElectricityPriceDisplay';
+import WeatherCurrentDisplay from './components/WeatherCurrentDisplay';
+import WeatherForecastDisplay from './components/WeatherForecastDisplay';
+import CitySelector from './components/CitySelector';
+import TemperatureGraph from './components/TemperatureGraph';
+import { ELECTRICITY_FETCH_INTERVAL } from './constants';
 import './style.css';
-import { ELECTRICITY_FETCH_INTERVAL, WEATHER_FETCH_INTERVAL } from './constants';
+
+
 
 function useInterval(callback, delay) {
     const savedCallback = useRef();
@@ -27,10 +31,17 @@ function useInterval(callback, delay) {
 const App = () => {
     const [price, setPrice] = useState(null);
     const [lastChecked, setLastChecked] = useState(null);
-    const [time, setTime] = useState(Date.now());
     const [showEuros, setShowEuros] = useState(false);
     const [weather, setWeather] = useState(null);
     const [forecast, setForecast] = useState(null);
+    const [city, setCity] = useState('Helsinki');
+    const [weatherData, setWeatherData] = useState(null);
+
+    useEffect(() => {
+        fetchWeatherDataForCity(city)
+            .then(data => setWeatherData(data))
+            .catch(error => console.error(error));
+    }, [city]);
 
     const fetchPrice = () => {
         console.log('Fetching price...');
@@ -46,149 +57,29 @@ const App = () => {
             });
     };
 
-    const fetchWeather = () => {
-        console.log('Fetching weather...');
-        const city = 'Helsinki';
-        fetchCurrentWeather(city)
-            .then((data) => {
-                console.log(weather)
-                if (data !== null) {
-                    setWeather(data);
-                    setLastChecked(Date.now());
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
-    useEffect(() => {
-        fetchForecastWeather('Helsinki')
-            .then(data => setForecast(data))
-            .catch(error => console.error(error));
-    }, []);
-
-    useEffect(() => {
-        fetchWeather();
-        const interval = setInterval(fetchWeather, WEATHER_FETCH_INTERVAL);
-        return () => clearInterval(interval);
-    }, []);
-
     useEffect(() => {
         fetchPrice();
     }, []);
 
-
     useInterval(fetchPrice, ELECTRICITY_FETCH_INTERVAL);
-    useInterval(() => setTime(Date.now()), 1000);
-
-    const priceToCents = (price) => {
-        return (price * 100).toFixed(2);
-    };
 
     const handleRefreshClick = () => {
         setPrice(null);
         fetchPrice();
     };
 
-    const formatTimeElapsed = () => {
-        if (lastChecked !== null) {
-            const secondsElapsed = Math.floor((Date.now() - lastChecked) / 1000);
-            const minutes = Math.floor(secondsElapsed / 60);
-            const seconds = secondsElapsed % 60;
-            return `${minutes} minutes and ${seconds} seconds ago`;
-        } else {
-            return "0 minutes and 0 seconds ago";
-        }
-    };
-
-    const options = [
-        'Finland',
-    ];
-    const defaultOption = options[0];
-
-    const _onSelect = (option) => {
-        console.log('You selected ', option);
-    };
-
-    const handlePriceClick = () => {
-        setShowEuros(!showEuros);
-    };
-
-    const getWeekday = (date) => {
-        const options = { weekday: 'long' };
-        return new Intl.DateTimeFormat('en-US', options).format(date);
-    };
-
-    const Forecast = ({ data }) => {
-        if (!data) {
-            return <p>Loading forecast...</p>;
-        }
-
-        // Filter the forecast data to get the weather at 12:00 each day
-        const dailyData = data.list.filter((forecast) =>
-            new Date(forecast.dt * 1000).getHours() === 12
-        );
-
-        return (
-            <div className="forecast">
-                {dailyData.slice(0, 7).map((forecast, index) => (
-                    <div key={index} className="forecast-day">
-                        <p>{getWeekday(new Date(forecast.dt * 1000))}</p>
-                        <p>{Math.round(forecast.main.temp)} °C</p>
-                        <img src={`https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`} alt={forecast.weather[0].description} />
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
     return (
         <div className="app">
-            <h1 className="title">Electricity Price</h1>
-            {price !== null ? (
-                <div>
-                    <p>
-                        The current price is {' '}
-                        <span onClick={handlePriceClick} className={`price ${showEuros ? 'clicked' : ''}`}>
-                            {showEuros
-                                ? `${price} €`
-                                : `${priceToCents(price)} ¢`}</span> / kWh.
-                    </p>
-                    <p className="last-checked">Last checked: {formatTimeElapsed()}</p>
-                </div>
-            ) : (
-                <div>
-                    <p className="loading">Loading...</p>
-                </div>
-            )}
-            <button className="refresh-button" onClick={handleRefreshClick}>{price !== null ? 'Refresh' : 'Refreshing...'}</button>
-            <Dropdown className="country-selector" options={options} onChange={_onSelect} value={defaultOption} placeholder="Select an option" />
-
-            <div className="weather">
-                <h1 className="title">Weather</h1>
-                {weather !== null ? (
-                    <div className='weather-container'>
-                        <p>
-                            The current temperature is {' '}
-                            <span className="weather-temperature">
-                                {weather.temperature} °C
-                            </span>
-
-                            <img className="weather-icon"
-                                src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} alt={weather.description}
-                            />
-
-                        </p>
-                    </div>
-                ) : (
-                    <div>
-                        <p className="loading">Loading...</p>
-                    </div>
-                )}
-            </div>
-            <Forecast data={forecast} />
-
+            <ElectricityPriceDisplay price={price} lastChecked={lastChecked} onRefresh={handleRefreshClick} />
+            <CitySelector city={city} setCity={setCity} />
+            {weatherData && (
+                <>
+                    <WeatherCurrentDisplay weatherData={weatherData.current} />
+                    <WeatherForecastDisplay forecastData={weatherData.forecast} />
+                    <TemperatureGraph data={weatherData.forecast} />
+                </>
+            )
+            }
         </div>
     );
 };

@@ -39,6 +39,16 @@ h1 {
     font-size: 24px;
     font-weight: bold;
     color: #333;
+    color: blue;
+    cursor: pointer;
+    border: 1px solid blue;
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.price.clicked {
+    border-color: lightblue;
 }
 
 .last-checked {
@@ -73,20 +83,6 @@ button:hover {
     font-size: 12px;
 }
 
-.price {
-    color: blue;
-    cursor: pointer;
-    border: 1px solid blue;
-    padding: 5px;
-    background-color: white;
-    border-radius: 5px;
-}
-
-.price.clicked {
-    border-color: lightblue;
-}
-
-
 .weather-temperature {
     font-weight: bold;
     color: #333;
@@ -114,5 +110,48 @@ button:hover {
     background-color: var(--bg-darker);
     border-radius: 5px;
     padding: 10px;
+}
 
+select {
+    margin: 10px;
+}
+
+.temperature-graph {
+    margin-top: 20px;
+}
+
+.detailed-forecast {
+    margin-top: 20px;
+}
+
+.detailed-forecast table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detailed-forecast th,
+.detailed-forecast td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.detailed-forecast th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+temperature-graph button {
+    display: block;
+    margin: 10px auto;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px auto;
+}
+
+form input {
+    width: 200px;
 }

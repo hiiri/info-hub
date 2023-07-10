@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BACKEND_BASEURL } from '../constants';
+import { BACKEND_BASEURL, WEATHER_CACHE_KEY_PREFIX, WEATHER_CACHE_EXPIRATION_IN_MINUTES } from '../constants';
 
 const backendAPI = axios.create({
     baseURL: BACKEND_BASEURL,
@@ -17,29 +17,31 @@ export const fetchCurrentElectricityPrice = async () => {
         return { error: error.message };
     }
 }
-
-export const fetchCurrentWeather = async (city) => {
-    try {
-        const response = await backendAPI.get(`/weather/${city}`);
-        const temperature = response.data.main.temp;
-        const icon = response.data.weather[0].icon;
-        const description = response.data.weather[0].description;
-        console.log(response.data)
-
-        return { temperature, icon, description };
-    } catch (error) {
-        console.error(error);
-        return null;
+export const fetchWeatherDataForCity = async (city) => {
+    // Cache weather data in browser localStorage
+    const cacheKey = WEATHER_CACHE_KEY_PREFIX + city;
+    const cachedWeatherData = localStorage.getItem(cacheKey);
+  
+    if (cachedWeatherData) {
+      const parsedData = JSON.parse(cachedWeatherData);
+      const { timestamp, data } = parsedData;
+  
+      if (Date.now() - timestamp < WEATHER_CACHE_EXPIRATION_IN_MINUTES * 60 * 1000) {
+        return data;
+      }
     }
-}
-
-export const fetchForecastWeather = async (city) => {
+  
     try {
-        const response = await backendAPI.get(`/weather/forecast/${city}`);
-        console.log(response.data)
-        return response.data;
+      const response = await backendAPI.get(`/weather/${city}`);
+      const weatherData = response.data;
+  
+      // Cache the weather data with the current timestamp
+      const dataToCache = { timestamp: Date.now(), data: weatherData };
+      localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+  
+      return weatherData;
     } catch (error) {
-        console.error(error);
-        return null;
+      console.error(error);
+      return null;
     }
-}
+  };
