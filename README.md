@@ -1,7 +1,7 @@
 # info-hub
 Dashboard for useful daily home data created using Node.js and React.
 
-![Preview](./github/preview.png)
+<img src="./github/preview.png" alt="Preview" width="500"/>
 
 ## Todo
 
